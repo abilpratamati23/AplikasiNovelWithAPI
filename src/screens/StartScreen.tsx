@@ -1,40 +1,56 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
+  TextInput,
+  Alert,
 } from 'react-native';
 
 const colors = {
-  primary: '#00b8b0',
-  secondary: '#343A40',
-  text: '#fff',
+  primary: '#4287f5', // Blue theme
+  secondary: '#ffffff',
+  text: '#ffffff',
+  inputBackground: '#a3c2f0',
+  buttonText: '#ffffff',
 };
 
-const container ={
-  flex: 1,
-  padding: 20,
-}
-
-const App = () => {
+const LoginScreen = () => {
   const navigation = useNavigation();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    navigation.navigate('Main' as never);
+  };
 
   return (
-    <ImageBackground source={require('../../assets/bg.jpg')} style={styles.image}>
-      <View style={[container, {justifyContent: 'flex-end'}]}>
-        <Text style={styles.title}>Your Next Adventure Starts Here</Text>
-        <Text style={styles.text}>
-          Life's too short to stay in one place. Find your next favorite city,
-          beach, or mountain and let's get moving!
-        </Text>
+    <ImageBackground source={require('../../assets/Background.webp')} style={styles.image}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Novel App</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          placeholderTextColor="#ffffff"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#ffffff"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
         <TouchableOpacity
-          onPress={() => navigation.navigate('Main' as never)}
+          onPress={handleLogin}
           style={styles.button}
         >
-          <Text style={styles.buttonText}>Start Exploring</Text>
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -47,33 +63,41 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 36,
-    fontWeight: '600',
-    marginBlockStart: 60,
-    color: colors.text,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  text: {
-    fontSize: 16,
-    fontWeight: '300',
-    marginTop: 10,
+  title: {
+    fontSize: 48,
+    fontWeight: 'bold',
     color: colors.text,
+    marginBottom: 40,
+  },
+  input: {
+    width: '80%',
+    backgroundColor: colors.inputBackground,
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    color: colors.text,
+    fontSize: 16,
   },
   button: {
     marginTop: 20,
     backgroundColor: colors.primary,
-    padding: 12,
-    borderRadius: 20,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 40,
+    padding: 15,
+    borderRadius: 10,
+    width: '80%',
     alignItems: 'center',
-    marginBottom: 40,
   },
   buttonText: {
-    color: colors.secondary,
-    fontWeight: '700',
-    fontSize: 16,
+    color: colors.buttonText,
+    fontWeight: 'bold',
+    fontSize: 18,
   },
 });
 
-export default App;
+export default LoginScreen;
