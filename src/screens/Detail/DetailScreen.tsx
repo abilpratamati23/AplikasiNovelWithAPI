@@ -98,7 +98,7 @@ const DetailScreen = () => {
     number: i + 1,
   }));
 
-  // Dummy data untuk reviews (data statis, bisa diganti dengan data dari API nanti)
+  // Dummy data untuk reviews
   const reviews: Review[] = [
     {
       id: '1',
@@ -122,6 +122,11 @@ const DetailScreen = () => {
       date: '2024-01-05',
     },
   ];
+
+  // Menghitung rata-rata rating dari reviews
+  const averageRating = reviews.length > 0
+    ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
+    : '4.5';
 
   // Mapping gambar novel berdasarkan ID (untuk menampilkan cover novel di detail screen)
   const novelImages: Record<string, any> = {
@@ -160,23 +165,57 @@ const DetailScreen = () => {
    */
   const renderOverview = () => (
     <View style={styles.tabContent}>
-      <View style={styles.infoContainer}>
-        <Text style={styles.novelTitle}>{novel.nama_novel}</Text>
-        <Text style={styles.novelAuthor}>{novel.author}</Text>
-        <View style={styles.metaInfo}>
-          <Text style={styles.infoText}>
-            <Text style={styles.infoLabel}>Genre:</Text> {novel.genre}
-          </Text>
-          <Text style={styles.infoText}>
-            <Text style={styles.infoLabel}>Tanggal Rilis:</Text>{' '}
+      <View style={styles.infoTextBox}>
+        <View style={styles.infoItem}>
+          <Text style={styles.infoBoxLabel}>Judul</Text>
+          <Text style={styles.infoBoxValue}>{novel.nama_novel}</Text>
+        </View>
+        <View style={styles.infoItem}>
+          <Text style={styles.infoBoxLabel}>Penulis</Text>
+          <Text style={styles.infoBoxValue}>{novel.author}</Text>
+        </View>
+        <View style={styles.infoItem}>
+          <Text style={styles.infoBoxLabel}>Genre</Text>
+          <Text style={styles.infoBoxValue}>{novel.genre}</Text>
+        </View>
+        <View style={styles.infoItem}>
+          <Text style={styles.infoBoxLabel}>Tanggal Rilis</Text>
+          <Text style={styles.infoBoxValue}>
             {new Date(novel.tanggal_rilis * 1000).toLocaleDateString()}
           </Text>
         </View>
+        <View style={[styles.infoItem, styles.infoItemLast]}>
+          <Text style={styles.infoBoxLabel}>Rating</Text>
+          <View style={styles.infoRatingContainer}>
+            <View style={styles.starsContainer}>
+              {Array.from({ length: 5 }, (_, i) => (
+                <Icon
+                  key={i}
+                  name={i < Math.round(parseFloat(averageRating)) ? 'star' : 'star-border'}
+                  size={20}
+                  color={i < Math.round(parseFloat(averageRating)) ? '#FFD700' : '#d0d0d0'}
+                />
+              ))}
+            </View>
+            <Text style={styles.ratingValue}>{averageRating}</Text>
+          </View>
+        </View>
       </View>
+
       <View style={styles.summaryContainer}>
         <Text style={styles.sectionTitle}>Summary</Text>
         <Text style={styles.summaryText}>{novel.sinopsis}</Text>
       </View>
+      
+      <View style={styles.readButtonsContainer}>
+        <TouchableOpacity style={[styles.readButton, styles.readButtonFirst]}>
+          <Text style={styles.readButtonText}>Read First</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.readButton, styles.readButtonLast]}>
+          <Text style={styles.readButtonText}>Read Last</Text>
+        </TouchableOpacity>
+      </View>
+
       <TouchableOpacity style={styles.favoriteButton} onPress={handleFavoriteToggle}>
         <Icon name="favorite" size={24} color={colors.favoriteIcon} />
         <Text style={styles.favoriteButtonText}>Favorite</Text>
@@ -272,10 +311,15 @@ const DetailScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={novelImages[novel.id] || require('../../../assets/Wallpaper.png')}
-        style={styles.novelImage}
-      />
+      <View style={styles.imageContainer}>
+        <Image
+          source={novelImages[novel.id] || require('../../../assets/Wallpaper.png')}
+          style={styles.novelImage}
+        />
+        <TouchableOpacity style={styles.shareButton}>
+          <Icon name="share" size={24} color={colors.secondary} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.tabsContainer}>
         <ScrollView
           horizontal
@@ -341,10 +385,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.background,
   },
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+  },
   novelImage: {
     width: '100%',
     height: 300,
     resizeMode: 'cover',
+  },
+  shareButton: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 24,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   tabsContainer: {
     backgroundColor: colors.cardBackground,
@@ -367,11 +431,15 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 16,
     color: colors.tabInactive,
-    fontWeight: '500',
+    fontWeight: '600',
+    letterSpacing: 0.3,
+    fontFamily: 'System',
   },
   tabTextActive: {
     color: colors.tabActive,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.3,
+    fontFamily: 'System',
   },
   contentScrollView: {
     flex: 1,
@@ -379,20 +447,61 @@ const styles = StyleSheet.create({
   tabContent: {
     paddingBottom: 20,
   },
-  infoContainer: {
-    padding: 20,
-    backgroundColor: colors.cardBackground,
+  infoTextBox: {
+    backgroundColor: '#ffffff',
+    padding: 24,
+    borderRadius: 16,
+    borderWidth: 0,
+    margin: 15,
+    shadowColor: '#4287f5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
   },
-  novelTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
+  infoItem: {
+    marginBottom: 18,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  infoItemLast: {
+    borderBottomWidth: 0,
+    marginBottom: 0,
+    paddingBottom: 0,
+  },
+  infoBoxLabel: {
+    fontSize: 11,
+    color: '#6b7280',
+    fontWeight: '700',
     marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    fontFamily: 'System',
   },
-  novelAuthor: {
-    fontSize: 16,
-    color: colors.tabInactive,
-    marginBottom: 15,
+  infoBoxValue: {
+    fontSize: 17,
+    color: '#1f2937',
+    fontWeight: '600',
+    lineHeight: 24,
+    fontFamily: 'System',
+  },
+  infoRatingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    marginRight: 10,
+  },
+  ratingValue: {
+    fontSize: 18,
+    color: '#1f2937',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   metaInfo: {
     marginBottom: 15,
@@ -411,35 +520,72 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 12,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 16,
+    letterSpacing: 0.3,
+    fontFamily: 'System',
   },
   summaryText: {
-    fontSize: 15,
-    color: colors.text,
-    lineHeight: 24,
+    fontSize: 16,
+    color: '#4b5563',
+    lineHeight: 26,
+    fontWeight: '400',
+    fontFamily: 'System',
+  },
+  readButtonsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    marginTop: 10,
+  },
+  readButton: {
+    flex: 1,
+    backgroundColor: colors.primary,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#4287f5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  readButtonFirst: {
+    marginRight: 12,
+  },
+  readButtonLast: {
+    marginRight: 0,
+  },
+  readButtonText: {
+    color: colors.secondary,
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    fontFamily: 'System',
   },
   favoriteButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.primary,
-    padding: 15,
+    padding: 16,
     margin: 20,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    borderRadius: 12,
+    shadowColor: '#4287f5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   favoriteButtonText: {
     color: colors.secondary,
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontWeight: '700',
     marginLeft: 10,
+    letterSpacing: 0.5,
+    fontFamily: 'System',
   },
   chaptersContainer: {
     backgroundColor: colors.cardBackground,
@@ -457,14 +603,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   chapterNumber: {
-    fontSize: 14,
-    color: colors.tabInactive,
-    marginBottom: 4,
+    fontSize: 13,
+    color: '#6b7280',
+    marginBottom: 6,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
+    fontFamily: 'System',
   },
   chapterTitle: {
-    fontSize: 16,
-    color: colors.text,
-    fontWeight: '500',
+    fontSize: 17,
+    color: '#1f2937',
+    fontWeight: '600',
+    lineHeight: 22,
+    fontFamily: 'System',
   },
   reviewsContainer: {
     backgroundColor: colors.cardBackground,
@@ -501,22 +653,28 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   reviewUserName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 6,
+    letterSpacing: 0.2,
+    fontFamily: 'System',
   },
   ratingContainer: {
     flexDirection: 'row',
   },
   reviewDate: {
-    fontSize: 12,
-    color: colors.tabInactive,
+    fontSize: 13,
+    color: '#9ca3af',
+    fontWeight: '500',
+    fontFamily: 'System',
   },
   reviewComment: {
-    fontSize: 14,
-    color: colors.text,
-    lineHeight: 20,
+    fontSize: 15,
+    color: '#4b5563',
+    lineHeight: 22,
+    fontWeight: '400',
+    fontFamily: 'System',
   },
   loadingChaptersContainer: {
     padding: 40,
@@ -525,8 +683,10 @@ const styles = StyleSheet.create({
   },
   loadingChaptersText: {
     marginTop: 10,
-    fontSize: 14,
-    color: colors.tabInactive,
+    fontSize: 15,
+    color: '#6b7280',
+    fontWeight: '500',
+    fontFamily: 'System',
   },
   emptyChaptersContainer: {
     padding: 40,
@@ -535,8 +695,10 @@ const styles = StyleSheet.create({
   },
   emptyChaptersText: {
     marginTop: 10,
-    fontSize: 16,
-    color: colors.tabInactive,
+    fontSize: 17,
+    color: '#6b7280',
+    fontWeight: '600',
+    fontFamily: 'System',
   },
 });
 

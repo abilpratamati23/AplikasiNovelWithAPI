@@ -60,6 +60,28 @@ const Home = () => {
     return chapterData ? chapterData.Chapter : 0;
   };
 
+  /**
+   * Mendapatkan rating novel berdasarkan ID
+   * @param novelId - ID novel yang akan dicari ratingnya
+   * @returns rating dalam format string (0.0 - 5.0)
+   */
+  const getNovelRating = (novelId: string): string => {
+    // Dummy rating berdasarkan ID novel (bisa diganti dengan data dari API)
+    const ratings: Record<string, string> = {
+      '1': '4.8',
+      '2': '4.5',
+      '3': '4.9',
+      '4': '4.3',
+      '5': '4.7',
+      '6': '4.6',
+      '7': '4.4',
+      '8': '4.9',
+      '9': '4.2',
+      '10': '4.8',
+    };
+    return ratings[novelId] || '4.5';
+  };
+
   // Filter novel berdasarkan query search (nama, author, atau genre)
   const filteredNovels = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -100,7 +122,7 @@ const Home = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={{ color: colors.primary, marginTop: 10 }}>Loading Novels...</Text>
+        <Text style={styles.loadingText}>Loading Novels...</Text>
       </View>
     );
   }
@@ -131,6 +153,8 @@ const Home = () => {
           <View style={styles.novelList}>
             {filteredNovels.map((novel) => {
               const chapterCount = getChapterCount(novel.id);
+              const rating = getNovelRating(novel.id);
+              const ratingNum = parseFloat(rating);
               return (
                 <TouchableOpacity
                   key={novel.id}
@@ -146,6 +170,20 @@ const Home = () => {
                       {novel.nama_novel}
                     </Text>
                     <Text style={styles.novelAuthor}>{novel.author}</Text>
+                    <View style={styles.ratingContainer}>
+                      <View style={styles.starsContainer}>
+                        {Array.from({ length: 5 }, (_, i) => (
+                          <Icon
+                            key={i}
+                            name={i < Math.round(ratingNum) ? 'star' : 'star-border'}
+                            size={14}
+                            color={i < Math.round(ratingNum) ? '#FFD700' : '#d0d0d0'}
+                            style={i < 4 ? { marginRight: 2 } : {}}
+                          />
+                        ))}
+                      </View>
+                      <Text style={styles.ratingValue}>{rating}</Text>
+                    </View>
                     {chapterCount > 0 && (
                       <View style={styles.chapterButtonContainer}>
                         <View style={styles.chapterButton}>
@@ -188,11 +226,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '700',
     color: colors.primary,
     marginBottom: 15,
     textAlign: 'center',
+    letterSpacing: 0.5,
+    fontFamily: 'System',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -215,6 +255,8 @@ const styles = StyleSheet.create({
     height: 45,
     fontSize: 16,
     color: colors.text,
+    fontWeight: '500',
+    fontFamily: 'System',
   },
   clearButton: {
     padding: 5,
@@ -230,53 +272,79 @@ const styles = StyleSheet.create({
   novelCard: {
     width: novelImageWidth,
     backgroundColor: colors.cardBackground,
-    borderRadius: 10,
+    borderRadius: 16,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    shadowColor: '#4287f5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
   },
   novelImage: {
     width: '100%',
-    height: 150,
+    height: 180,
     resizeMode: 'cover',
   },
   cardContent: {
-    padding: 10,
+    padding: 14,
   },
   novelTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 5,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 8,
+    lineHeight: 22,
+    letterSpacing: 0.1,
+    fontFamily: 'System',
+    minHeight: 44,
   },
   novelAuthor: {
     fontSize: 14,
-    color: '#666666',
-    marginBottom: 8,
+    color: '#6b7280',
+    marginBottom: 10,
+    fontWeight: '500',
+    fontFamily: 'System',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingVertical: 4,
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    marginRight: 6,
+  },
+  ratingValue: {
+    fontSize: 13,
+    color: '#1f2937',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   chapterButtonContainer: {
-    marginTop: 5,
+    marginTop: 2,
   },
   chapterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 20,
+    backgroundColor: '#f8f9fa',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: 12,
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: '#e9ecef',
   },
   chapterButtonText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#666666',
+    color: '#6b7280',
     marginLeft: 6,
+    letterSpacing: 0.2,
+    fontFamily: 'System',
   },
   emptyContainer: {
     flex: 1,
@@ -285,16 +353,28 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   emptyText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.text,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
     marginTop: 20,
     marginBottom: 10,
+    letterSpacing: 0.3,
+    fontFamily: 'System',
   },
   emptySubText: {
-    fontSize: 14,
-    color: '#666666',
+    fontSize: 15,
+    color: '#6b7280',
     textAlign: 'center',
+    fontWeight: '500',
+    lineHeight: 22,
+    fontFamily: 'System',
+  },
+  loadingText: {
+    color: colors.primary,
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'System',
   },
 });
 

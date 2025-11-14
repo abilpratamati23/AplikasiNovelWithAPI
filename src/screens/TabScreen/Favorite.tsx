@@ -30,9 +30,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   message: {
-    fontSize: 16,
-    color: colors.text,
+    fontSize: 17,
+    color: '#4b5563',
     textAlign: 'center',
+    lineHeight: 26,
+    fontWeight: '500',
+    letterSpacing: 0.2,
+    fontFamily: 'System',
   },
 });
 

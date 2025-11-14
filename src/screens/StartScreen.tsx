@@ -52,6 +52,9 @@ const LoginScreen = () => {
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.forgotPasswordContainer}>
+          <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -71,32 +74,58 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   title: {
-    fontSize: 48,
-    fontWeight: 'bold',
+    fontSize: 52,
+    fontWeight: '700',
     color: colors.text,
     marginBottom: 40,
+    letterSpacing: 1,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+    fontFamily: 'System',
   },
   input: {
     width: '80%',
     backgroundColor: colors.inputBackground,
-    padding: 15,
-    borderRadius: 10,
+    padding: 16,
+    borderRadius: 12,
     marginBottom: 15,
     color: colors.text,
     fontSize: 16,
+    fontWeight: '500',
+    fontFamily: 'System',
   },
   button: {
     marginTop: 20,
     backgroundColor: colors.primary,
-    padding: 15,
-    borderRadius: 10,
+    padding: 16,
+    borderRadius: 12,
     width: '80%',
     alignItems: 'center',
+    shadowColor: '#4287f5',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   buttonText: {
     color: colors.buttonText,
-    fontWeight: 'bold',
+    fontWeight: '700',
     fontSize: 18,
+    letterSpacing: 0.5,
+    fontFamily: 'System',
+  },
+  forgotPasswordContainer: {
+    marginTop: 15,
+    alignItems: 'center',
+  },
+  forgotPasswordText: {
+    color: colors.text,
+    fontSize: 15,
+    textDecorationLine: 'underline',
+    fontWeight: '500',
+    letterSpacing: 0.2,
+    fontFamily: 'System',
   },
 });
 
